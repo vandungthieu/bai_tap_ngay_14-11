@@ -1,11 +1,13 @@
 package vn.edu.hust.studentman
 
 import android.os.Bundle
+import android.util.Log
+import android.view.LayoutInflater
 import android.widget.Button
-import androidx.activity.enableEdgeToEdge
+import android.widget.EditText
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -37,11 +39,38 @@ class MainActivity : AppCompatActivity() {
       StudentModel("Lê Văn Vũ", "SV020")
     )
 
-    val studentAdapter = StudentAdapter(students)
+    val studentAdapter = StudentAdapter(students,this)
 
     findViewById<RecyclerView>(R.id.recycler_view_students).run {
       adapter = studentAdapter
       layoutManager = LinearLayoutManager(this@MainActivity)
     }
+
+    // thêm sinh viên
+    findViewById<Button>(R.id.btn_add_new).setOnClickListener {
+      val dialogView = LayoutInflater.from(this)
+        .inflate(R.layout.layout_alert_dialog, null)
+
+      val editHoten = dialogView.findViewById<EditText>(R.id.edit_hoten)
+      val editMssv = dialogView.findViewById<EditText>(R.id.edit_mssv)
+
+      AlertDialog.Builder(this)
+        .setTitle("Nhap thong tin sinh vien")
+        .setView(dialogView)
+        .setPositiveButton("OK", { _, _ ->
+          val hoten = editHoten.text.toString()
+          val mssv = editMssv.text.toString()
+          students.add(StudentModel(hoten,mssv))
+          studentAdapter.notifyItemInserted(students.size - 1)
+          Toast.makeText(this, "Thêm thành công", Toast.LENGTH_SHORT).show()
+          Log.v("TAG", "$hoten - $mssv")
+
+        })
+        .setNegativeButton("Cancel", null)
+        .show()
+    }
+
+
+
   }
 }
